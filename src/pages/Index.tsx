@@ -70,7 +70,7 @@ const Index = () => {
         {/* Header */}
         <div className="text-center space-y-4 animate-fade-down">
           <h1 className="text-4xl font-bold text-gray-900">
-            Free File Converter
+            Convert my file
           </h1>
           <p className="text-xl text-gray-600">
             Convert your files to any format instantly
