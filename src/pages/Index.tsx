@@ -3,8 +3,14 @@ import FileUpload from '@/components/FileUpload';
 import FormatSelector from '@/components/FormatSelector';
 import ConversionProgress from '@/components/ConversionProgress';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, FileType } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 const Index = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -12,6 +18,7 @@ const Index = () => {
   const [converting, setConverting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [convertedUrl, setConvertedUrl] = useState<string | null>(null);
+  const [conversionType, setConversionType] = useState<'image' | 'document'>('image');
 
   const handleConversion = async () => {
     if (!selectedFile) return;
@@ -52,6 +59,11 @@ const Index = () => {
     }
   };
 
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file);
+    setConvertedUrl(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <div className="container py-12 space-y-8">
@@ -67,44 +79,92 @@ const Index = () => {
 
         {/* Main Content */}
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-up">
-          {!selectedFile ? (
-            <FileUpload onFileSelect={setSelectedFile} />
-          ) : (
-            <div className="space-y-6">
-              <div className="flex items-center justify-center space-x-4">
-                <p className="text-gray-600">
-                  Selected: {selectedFile.name}
-                </p>
-                <FormatSelector
-                  value={targetFormat}
-                  onChange={setTargetFormat}
-                />
-              </div>
-
-              {converting ? (
-                <ConversionProgress progress={progress} />
+          <Tabs defaultValue="image" onValueChange={(value) => setConversionType(value as 'image' | 'document')}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="image">Image Converter</TabsTrigger>
+              <TabsTrigger value="document">Document Converter</TabsTrigger>
+            </TabsList>
+            <TabsContent value="image" className="space-y-8">
+              {!selectedFile ? (
+                <FileUpload onFileSelect={handleFileSelect} type="image" />
               ) : (
-                <div className="flex justify-center">
-                  {!convertedUrl ? (
-                    <Button
-                      onClick={handleConversion}
-                      className="bg-primary hover:bg-primary/90"
-                    >
-                      Convert Now
-                    </Button>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-center space-x-4">
+                    <p className="text-gray-600">
+                      Selected: {selectedFile.name}
+                    </p>
+                    <FormatSelector
+                      value={targetFormat}
+                      onChange={setTargetFormat}
+                      type="image"
+                    />
+                  </div>
+                  {converting ? (
+                    <ConversionProgress progress={progress} />
                   ) : (
-                    <Button
-                      onClick={handleDownload}
-                      className="bg-success hover:bg-success/90"
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      Download
-                    </Button>
+                    <div className="flex justify-center">
+                      {!convertedUrl ? (
+                        <Button
+                          onClick={handleConversion}
+                          className="bg-primary hover:bg-primary/90"
+                        >
+                          Convert Now
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={handleDownload}
+                          className="bg-success hover:bg-success/90"
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          Download
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
               )}
-            </div>
-          )}
+            </TabsContent>
+            <TabsContent value="document" className="space-y-8">
+              {!selectedFile ? (
+                <FileUpload onFileSelect={handleFileSelect} type="document" />
+              ) : (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-center space-x-4">
+                    <p className="text-gray-600">
+                      Selected: {selectedFile.name}
+                    </p>
+                    <FormatSelector
+                      value={targetFormat}
+                      onChange={setTargetFormat}
+                      type="document"
+                    />
+                  </div>
+                  {converting ? (
+                    <ConversionProgress progress={progress} />
+                  ) : (
+                    <div className="flex justify-center">
+                      {!convertedUrl ? (
+                        <Button
+                          onClick={handleConversion}
+                          className="bg-primary hover:bg-primary/90"
+                        >
+                          Convert Now
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={handleDownload}
+                          className="bg-success hover:bg-success/90"
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          Download
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Ad Space */}
